@@ -6,14 +6,31 @@ import (
 )
 
 const (
-	RoleAdmin         = "admin"
-	RoleModerator     = "moderator"
-	RoleLeadVolunteer = "lead_volunteer"
-	RoleVolunteer     = "volunteer"
-	RoleLeadProvider  = "lead_provider"
-	RoleProvider      = "provider"
-	RoleRefugee       = "refugee"
+	RoleAdmin     = "admin"
+	RoleClient    = "client"
+	RoleModerator = "moderator"
+	RoleService   = "service"
 )
+
+type User struct {
+	Model
+	Address       string         `json:"address,omitempty" validate:"max=128"`
+	AuthID        string         `json:"authID,omitempty"`
+	AuthProvider  string         `json:"authProvider,omitempty"`
+	Dob           time.Time      `json:"dob,omitempty"` // todo: date validation
+	FirstName     string         `json:"firstName" validate:"min=1,max=64"`
+	LastName      string         `json:"lastName" validate:"min=2,max=64"`
+	Email         string         `json:"email,omitempty" gorm:"uniqueIndex,size:255" validate:"email,max=64"` // todo: required if no mobile
+	History       []Login        `json:"history,omitempty" gorm:"foreignKey:CreatedByID"`
+	IdentityNo    string         `json:"identityNo,omitempty"` // todo: gorm:"unique"
+	LastSeenAt    time.Time      `json:"lastSeenAt,omitempty"`
+	Mobile        string         `json:"mobile" gorm:"unique" validate:"numeric"` // todo: required if no email
+	Notifications []Notification `json:"notifications,omitempty"`
+	Password      string         `json:"password,omitempty"`
+	Photo         string         `json:"photo,omitempty"`
+	Recovery      string         `json:"recovery,omitempty"` // todo validate:"numeric,len=6"
+	Scopes        string         `json:"scopes"`
+}
 
 type UserDTO struct {
 	ID           uint      `json:"id"`
@@ -30,28 +47,6 @@ type UserDTO struct {
 	Mobile       string    `json:"mobile"`
 	Photo        string    `json:"photo,omitempty"`
 	Scopes       string    `json:"scopes"`
-}
-
-type User struct {
-	Model
-	// Address       string         `json:"address,omitempty" validate:"max=128"`
-	AuthID       string    `json:"authID,omitempty"`
-	AuthProvider string    `json:"authProvider,omitempty"`
-	Dob          time.Time `json:"dob,omitempty"` // todo: date validation
-	FirstName    string    `json:"firstName" validate:"min=1,max=64"`
-	LastName     string    `json:"lastName" validate:"min=2,max=64"`
-	Email        string    `json:"email,omitempty" gorm:"uniqueIndex,size:255" validate:"email,max=64"` // todo: required if no mobile
-	History      []Login   `json:"history,omitempty" gorm:"foreignKey:CreatedByID"`
-	IdentityNo   string    `json:"identityNo,omitempty"` // todo: gorm:"unique"
-	LastSeenAt   time.Time `json:"lastSeenAt,omitempty"`
-	//Locations    []Location `json:"locations,omitempty" gorm:"foreignKey:HostID"`
-	// Mobile        string         `json:"mobile" gorm:"unique" validate:"numeric"` // todo: required if no email
-	Notifications []Notification `json:"notifications,omitempty"`
-	Password      string         `json:"password,omitempty"`
-	Photo         string         `json:"photo,omitempty"`
-	// Recovery      string         `json:"recovery,omitempty"` // todo validate:"numeric,len=6"
-	//Requests []Request `json:"requests,omitempty" gorm:"foreignKey:CreatedByID"`
-	Scopes string `json:"scopes"`
 }
 
 func (u *User) AuthType() string {
@@ -71,5 +66,5 @@ func (u *User) Is(role string) bool {
 }
 
 func (u *User) IsBasic() bool {
-	return !strings.Contains(u.Scopes, RoleAdmin)
+	return !strings.Contains(u.Scopes, RoleAdmin) && !strings.Contains(u.Scopes, RoleModerator)
 }
