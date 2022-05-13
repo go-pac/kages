@@ -22,7 +22,6 @@ type User struct {
 	LastName      string         `json:"lastName" validate:"min=2,max=64"`
 	Email         string         `json:"email,omitempty" gorm:"uniqueIndex,size:255" validate:"email,max=64"` // todo: required if no mobile
 	History       []Login        `json:"history,omitempty" gorm:"foreignKey:CreatedByID"`
-	IdentityNo    string         `json:"identityNo,omitempty"` // todo: gorm:"unique"
 	LastSeenAt    time.Time      `json:"lastSeenAt,omitempty"`
 	Mobile        string         `json:"mobile" gorm:"unique" validate:"numeric"` // todo: required if no email
 	Notifications []Notification `json:"notifications,omitempty"`
@@ -41,7 +40,6 @@ type UserDTO struct {
 	Dob          time.Time `json:"dob,omitempty"`
 	Email        string    `json:"email,omitempty"`
 	FirstName    string    `json:"firstName"`
-	IdentityNo   string    `json:"identityNo,omitempty"`
 	LastName     string    `json:"lastName"`
 	LastSeenAt   time.Time `json:"lastSeenAt"`
 	Mobile       string    `json:"mobile"`
