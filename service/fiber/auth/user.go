@@ -6,6 +6,11 @@ import (
 	"github.com/go-pac/kages/model"
 )
 
+const (
+	TokenKey        = "token"
+	UserKey         = "user"
+)
+
 // todo: base64 decode ID
 func GetUserFromCtx(ctx *fiber.Ctx) *model.User {
 	if userData := ctx.Locals(UserKey); userData != nil {
